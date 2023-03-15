@@ -62,17 +62,12 @@ inquirer.prompt([
                     }
                 ])
             .then ((res)=> {
-               // const newDepartment = res.text;
-                console.log(res.text);
-                db.query(`INSERT INTO department(names) VALUES ("${res.text}"),`, function (err, results) {
-                    // console.table("added");
+                db.query(`INSERT INTO department(names) VALUES ("${res.text}");`, function (err, results) {
+                    console.table("Department added");
                   });
                 db.query('SELECT * FROM department;', function (err, results) {
                         console.table(results);
             })
-            // db.query('SELECT * FROM department;', function (err, results) {
-            //     console.table(results);
-            //   });
         })
     }
 })
