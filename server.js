@@ -53,22 +53,33 @@ inquirer.prompt([
             console.table(results);
             });
     }
-
+    if (task === "Add a Department"){
+            inquirer.prompt([
+                    {
+                        type: "input",
+                        message: "Insert Department Name",
+                        name: "text"
+                    }
+                ])
+            .then ((res)=> {
+               // const newDepartment = res.text;
+                console.log(res.text);
+                db.query(`INSERT INTO department(names) VALUES ("${res.text}"),`, function (err, results) {
+                    // console.table("added");
+                  });
+                db.query('SELECT * FROM department;', function (err, results) {
+                        console.table(results);
+            })
+            // db.query('SELECT * FROM department;', function (err, results) {
+            //     console.table(results);
+            //   });
+        })
+    }
 })
-// if (task === "Show all Departments"){
-//     d0b.query('SHOW * FROM deparment', function (err, results) {
-//         console.log(results);
-//       });
-// }
 
 // db.query(`DELETE FROM favorite_books WHERE id = ?`,deletedRow, (err, result) => {
 // if (err) {
 //     console.log(err);
 // }
 // console.log(result);
-// });
-
-// // Query database
-// db.query('SELECT * FROM favorite_books', function (err, results) {
-// console.log(results);
 // });
