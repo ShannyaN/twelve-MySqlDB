@@ -15,22 +15,15 @@ INSERT INTO role (title, salary, department_id)
             ("Executive Manager", 100000, 4);
 SELECT * FROM role;
 
+INSERT INTO employee (first_name, last_name, role_id)
+    VALUES ("Rick", "Grimes", 5);
+
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
-    VALUES("Sam", "Winchester", 1, 4),
-        ("Dean", "Winchester", 2, 4),
-        ("Carl", "Grimes", 3, 4),;
-        ("Rick", "Grimes", 4, 4);
+    VALUES("Sam", "Winchester", 1, 1),
+        ("Dean", "Winchester", 2, 1),
+        ("Carl", "Grimes", 3, 1),
+        ("Joel", "Miller", 4, 1);
+       
 
-SELECT * FROM role;
 
--- CREATE TABLE employee (
---     id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
---     first_name VARCHAR(30) NOT NULL,
---     last_name VARCHAR(30) NOT NULL,
---     role_id INT,
---     manager_id INT,
---     FOREIGN KEY (role_id)
---     REFERENCES role(id)
---     ON DELETE SET NULL
--- );
---  DESCRIBE employee;
+SELECT * FROM employee;

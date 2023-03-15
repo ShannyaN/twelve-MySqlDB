@@ -18,6 +18,7 @@ CREATE TABLE role (
     ON DELETE SET NULL
 );
  DESCRIBE role;
+
 CREATE TABLE employee (
     id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
     first_name VARCHAR(30) NOT NULL,
@@ -29,6 +30,7 @@ CREATE TABLE employee (
     ON DELETE SET NULL,
     FOREIGN KEY (manager_id)
     REFERENCES employee(id)
-    ON DELETE SET NULL
 );
+
+
  DESCRIBE employee;
