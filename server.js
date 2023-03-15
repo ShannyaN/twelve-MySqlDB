@@ -27,7 +27,13 @@ inquirer.prompt([
         type: "list",
         message: "What would you like to do? ",
         name: "task",
-        choices: ['Show all Departments', 'Show all Roles', 'Show all Employees', ]
+        choices: ['Show all Departments', 
+        'Show all Roles', 
+        'Show all Employees', 
+        'Add a Department',
+        'Add a Role',
+        'Add an Employee',
+        'Update an Employee Role']
     }
 ])
 .then ((response)=> {
