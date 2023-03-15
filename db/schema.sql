@@ -6,9 +6,9 @@ CREATE TABLE department (
     id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
     names VARCHAR(30) NOT NULL
 );
-DESCRIBE * FROM department;
+ DESCRIBE department;
 
-CREATE TABLE roles (
+CREATE TABLE role (
     id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
     title VARCHAR(30) NOT NULL,
     salary DECIMAL NOT NULL,
@@ -17,7 +17,7 @@ CREATE TABLE roles (
     REFERENCES department(id)
     ON DELETE SET NULL
 );
-DESCRIBE * FROM roles;
+ DESCRIBE role;
 CREATE TABLE employee (
     id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
     first_name VARCHAR(30) NOT NULL,
@@ -25,7 +25,10 @@ CREATE TABLE employee (
     role_id INT,
     manager_id INT,
     FOREIGN KEY (role_id)
-    REFERENCES roles(id)
+    REFERENCES role(id)
+    ON DELETE SET NULL,
+    FOREIGN KEY (manager_id)
+    REFERENCES employee(id)
     ON DELETE SET NULL
 );
-DESCRIBE * FROM employee;
+ DESCRIBE employee;
