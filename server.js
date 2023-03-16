@@ -4,8 +4,8 @@ const inquirer = require('inquirer');
 const app = express();
 require('console.table');
 
-var regex = /[ !@#$%^&*()_+\-12345678=\[\]{};:"\\|,.<>\/?]/g;
-
+let regex = /[ !@#$%^&*()_+\-12345678=\[\]{};:"\\|,.<>\/?]/g;
+let managerID;
 // Express middleware
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -138,21 +138,25 @@ inquirer.prompt([
                 name: "roleID"
             },
             {
-                type: "confirm",
-                message: "Do you have a manager? ",
-                name: "manager"
+                type: "input",
+                message: "Insert Employee's Manager id if applicable.",
+                name: "managerID"
             }
 
         ])
     .then ((res)=> {
-        console.log(res)
-        db.query(`INSERT INTO role (title, salary, department_id)VALUES("${res.roleTitle}", ${res.salary}, ${res.depId});`, function (err, results) {
-            console.table("Role added.");
-          });
-        db.query('SELECT * FROM role;', function (err, results) {
-                console.table(results);
-        }
-    )})
+        //console.log(res)
+        if (res.managerID.length){
+            db.query(`INSERT INTO emlployee (first_name, last_name, role_id, manager_id) VALUES("${res.firstName}", "${res.lastName}", ${res.roleID},${res.managerID});`, function (err, results) {
+            console.table("Employee added.");
+          });}
+        else {
+            db.query(`INSERT INTO emlployee (first_name, last_name, role_id, manager_id) VALUES("${res.firstName}", "${res.lastName}", ${res.roleID});`, function (err, results) {
+                console.table("Employee added.");
+            })
+        db.query('SELECT * FROM employee;', function (err, results) {
+                console.table(results);})
+    }})
 }})
 
 // db.query(`DELETE FROM favorite_books WHERE id = ?`,deletedRow, (err, result) => {
