@@ -5,7 +5,7 @@ const app = express();
 require('console.table');
 
 let regex = /[ !@#$%^&*()_+\-12345678=\[\]{};:"\\|,.<>\/?]/g;
-let managerID;
+let re;
 // Express middleware
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -37,23 +37,28 @@ inquirer.prompt([
         'Add an Employee',
         'Update an Employee Role']
     }
+
 ])
 .then ((response)=> {
     const task = response.task;
+    re = response.again;
     if (task === "Show all Departments"){
         db.query('SELECT * FROM department;', function (err, results) {
             console.table(results);
           });
+          again();
     }
     if (task === "Show all Roles"){
         db.query('SELECT * FROM role;', function (err, results) {
             console.table(results);
             });
+        again();
     }
     if (task === "Show all Employees"){
-        db.query('SELECT * FROM employee;', function (err, results) {
+        db.query('SELECT * FROM employees;', function (err, results) {
             console.table(results);
             });
+        again();
     }
     if (task === "Add a Department"){
             inquirer.prompt([
@@ -69,7 +74,8 @@ inquirer.prompt([
                   });
                 db.query('SELECT * FROM department;', function (err, results) {
                         console.table(results);
-            })
+                })
+                // again();
         })
     }
     if (task === "Add a Role"){
@@ -118,6 +124,7 @@ inquirer.prompt([
             db.query('SELECT * FROM role;', function (err, results) {
                     console.table(results);
             })
+            // again();
         }})
     }
     if (task === 'Add an Employee'){
@@ -146,18 +153,45 @@ inquirer.prompt([
         ])
     .then ((res)=> {
         //console.log(res)
-        if (res.managerID.length){
-            db.query(`INSERT INTO emlployee (first_name, last_name, role_id, manager_id) VALUES("${res.firstName}", "${res.lastName}", ${res.roleID},${res.managerID});`, function (err, results) {
-            console.table("Employee added.");
-          });}
+        db.query('SELECT * FROM employees;', function (err, results) {
+            console.table(results);})
+        const {managerID} = res;
+        console.log(managerID);
+        if (managerID.length){
+            db.query(`INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES("${res.firstName}", "${res.lastName}", ${res.roleID}, ${res.managerID});`, function (err, results) {
+                if (err){
+                    console.log(err)
+                }else{
+                    console.table("Role added.");
+                    db.query('SELECT * FROM employees;', function (err, results) {
+                        console.table(results);
+                })
+              }});
+            }
         else {
-            db.query(`INSERT INTO emlployee (first_name, last_name, role_id, manager_id) VALUES("${res.firstName}", "${res.lastName}", ${res.roleID});`, function (err, results) {
-                console.table("Employee added.");
-            })
-        db.query('SELECT * FROM employee;', function (err, results) {
-                console.table(results);})
-    }})
-}})
+            db.query(`INSERT INTO employees (first_name, last_name, role_id) VALUES("${res.firstName}", "${res.lastName}", ${res.roleID});`, function (err, results) {
+                if (err){
+                    console.log(err)
+                }else{
+                    console.table("Role added.");
+                    db.query('SELECT * FROM employees;', function (err, results) {
+                        console.table(results);
+                })
+              }});
+            }
+            // db.query(`INSERT INTO emlployees (first_name, last_name, role_id, manager_id) VALUES ("${res.firstName}", "${res.lastName}" , ${res.roleID});`, function (err, results) {
+            // if (err){
+            //     console.log(err)
+            // }else{
+            //     console.log("Employee added.");
+            // }})
+            // again();
+        }
+    // db.query('SELECT * FROM employee;', function (err, results) {
+    //     console.table(results);})
+    )}})
+
+
 
 // db.query(`DELETE FROM favorite_books WHERE id = ?`,deletedRow, (err, result) => {
 // if (err) {

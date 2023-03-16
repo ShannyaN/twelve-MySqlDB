@@ -15,10 +15,10 @@ INSERT INTO role (title, salary, department_id)
             ("Executive Manager", 100000, 4);
 SELECT * FROM role;
 
-INSERT INTO employee (first_name, last_name, role_id)
+INSERT INTO employees (first_name, last_name, role_id)
     VALUES ("Rick", "Grimes", 5);
 
-INSERT INTO employee (first_name, last_name, role_id, manager_id)
+INSERT INTO employees (first_name, last_name, role_id, manager_id)
     VALUES("Sam", "Winchester", 1, 1),
         ("Dean", "Winchester", 2, 1),
         ("Carl", "Grimes", 3, 1),
@@ -26,4 +26,4 @@ INSERT INTO employee (first_name, last_name, role_id, manager_id)
        
 
 
-SELECT * FROM employee;
+SELECT * FROM employees;
