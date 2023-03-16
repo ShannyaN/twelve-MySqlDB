@@ -46,19 +46,16 @@ inquirer.prompt([
         db.query('SELECT * FROM department;', function (err, results) {
             console.table(results);
           });
-          again();
     }
     if (task === "Show all Roles"){
         db.query('SELECT * FROM role;', function (err, results) {
             console.table(results);
             });
-        again();
     }
     if (task === "Show all Employees"){
         db.query('SELECT * FROM employees;', function (err, results) {
             console.table(results);
             });
-        again();
     }
     if (task === "Add a Department"){
             inquirer.prompt([
@@ -69,14 +66,18 @@ inquirer.prompt([
                     }
                 ])
             .then ((res)=> {
-                db.query(`INSERT INTO department(names) VALUES ("${res.text}");`, function (err, results) {
+                let depName = res.text;
+                if (regex.test(depName)){
+                    throw new Error("Enter valid department name.");
+                    return;
+                } else{
+                db.query(`INSERT INTO department(names) VALUES ("${depName}");`, function (err, results) {
                     console.table("Department added");
                   });
                 db.query('SELECT * FROM department;', function (err, results) {
                         console.table(results);
                 })
-                // again();
-        })
+        }})
     }
     if (task === "Add a Role"){
         inquirer.prompt([
@@ -98,8 +99,6 @@ inquirer.prompt([
             ])
         .then ((res)=> {
             let title = res.roleTitle;
-            console.log(regex.test(title));
-            let bool = regex.test(title);
             if (regex.test(title)){
                 throw new Error("Enter valid role title.");
                 return;
@@ -121,7 +120,7 @@ inquirer.prompt([
             db.query(`INSERT INTO role (title, salary, department_id)VALUES("${res.roleTitle}", ${res.salary}, ${res.depId});`, function (err, results) {
                 console.table("Role added.");
               });
-            db.query('SELECT * FROM role;', function (err, results) {
+            db.query('SELECT title FROM role;', function (err, results) {
                     console.table(results);
             })
             // again();
@@ -151,13 +150,40 @@ inquirer.prompt([
             }
 
         ])
-    .then ((res)=> {
-        //console.log(res)
-        db.query('SELECT * FROM employees;', function (err, results) {
-            console.table(results);})
-        const {managerID} = res;
-        console.log(managerID);
-        if (managerID.length){
+        .then ((res)=> {
+            let name1 = res.firstName;
+            let name2 = res.lastName;
+            let role;
+            let manager = res.managerID;
+            if (regex.test(name1)){
+                throw new Error("Enter valid name.");
+                return;
+            } 
+            if (regex.test(name2)){
+                throw new Error("Enter valid name.");
+                return;
+            } 
+            db.query(`SELECT title FROM role WHERE id = ${res.roleID};`, function(err, results) {
+                console.log(results)
+                if (results.length){
+                    role = results;
+                } else { 
+                    throw new Error("You must select a valid id from the role table.");
+                    return;
+                }
+            })
+            const {managerID} = res;
+            let managerInfo;
+            if (managerID.length){
+                db.query(`SELECT first_name FROM employees WHERE id = ${managerID};`, function(err, results) {
+                    console.log(results)
+                    if (results.length){
+                        managerInfo = results;
+                    } else { 
+                        throw new Error("You must select a valid id from the employees table.");
+                        return;
+                    }
+                })
             db.query(`INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES("${res.firstName}", "${res.lastName}", ${res.roleID}, ${res.managerID});`, function (err, results) {
                 if (err){
                     console.log(err)
@@ -166,25 +192,26 @@ inquirer.prompt([
                     db.query('SELECT * FROM employees;', function (err, results) {
                         console.table(results);
                 })
-              }});
+            }});
             }
-        else {
-            db.query(`INSERT INTO employees (first_name, last_name, role_id) VALUES("${res.firstName}", "${res.lastName}", ${res.roleID});`, function (err, results) {
-                if (err){
-                    console.log(err)
-                }else{
-                    console.table("Role added.");
-                    db.query('SELECT * FROM employees;', function (err, results) {
-                        console.table(results);
-                })
-              }});
-            }
-            // db.query(`INSERT INTO emlployees (first_name, last_name, role_id, manager_id) VALUES ("${res.firstName}", "${res.lastName}" , ${res.roleID});`, function (err, results) {
-            // if (err){
-            //     console.log(err)
-            // }else{
-            //     console.log("Employee added.");
-            // }})
+            else {
+                db.query(`INSERT INTO employees (first_name, last_name, role_id) VALUES("${res.firstName}", "${res.lastName}", ${res.roleID});`, 
+                function (err, results) {
+                    if (err){
+                        console.log(err)
+                    }else{
+                        console.table("Role added.");
+                        db.query('SELECT * FROM employees;', function (err, results) {
+                            console.table(results);
+                    })
+                }});
+                }
+                // db.query(`INSERT INTO emlployees (first_name, last_name, role_id, manager_id) VALUES ("${res.firstName}", "${res.lastName}" , ${res.roleID});`, function (err, results) {
+                // if (err){
+                //     console.log(err)
+                // }else{
+                //     console.log("Employee added.");
+                // }})
             // again();
         }
     // db.query('SELECT * FROM employee;', function (err, results) {
