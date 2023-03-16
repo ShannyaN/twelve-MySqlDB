@@ -23,7 +23,7 @@ const db = mysql.createConnection(
     console.log(`Connected to the hiring_db database.`)
   );
 
-//Selection of actions
+//Selection of possible actions
 inquirer.prompt([
     {
         type: "list",
@@ -45,7 +45,7 @@ inquirer.prompt([
 .then ((response)=> {
     const task = response.task;
     re = response.again;
-    if (task === "Show all Departments"){
+    if (task === "Show all Departments"){//print entire table
         db.query('SELECT * FROM department;', function (err, results) {
             console.table(results);
           });
@@ -55,7 +55,7 @@ inquirer.prompt([
             console.table(results);
             });
     }
-    if (task === 'Show Roles & Departments'){
+    if (task === 'Show Roles & Departments'){//joined departments and roles to see which roles correspond to which departments
         db.query('SELECT * FROM role INNER JOIN department ON role.department_id = department.id;',function (err, results) {
             console.table(results);
             });}
@@ -82,20 +82,20 @@ inquirer.prompt([
                 ])
             .then ((res)=> {
                 let depName = res.text;
-                if (regex.test(depName)){
+                if (regex.test(depName)){//making sure the name does not have special characters and is therefore valid
                     throw new Error("Enter valid department name.");
                     return;
                 } else{
                 db.query(`INSERT INTO department(names) VALUES ("${depName}");`, function (err, results) {
                     console.table("Department added");
                   });
-                db.query('SELECT * FROM department;', function (err, results) {
+                db.query('SELECT * FROM department;', function (err, results) {//print table with the new data input
                         console.table(results);
                 })
         }})
     }
     if (task === "Add a Role"){
-        inquirer.prompt([
+        inquirer.prompt([//new prompts to get more info
                 {
                     type: "input",
                     message: "Insert Role Title",
@@ -118,11 +118,11 @@ inquirer.prompt([
                 throw new Error("Enter valid role title.");
                 return;
             } else{
-            if (typeof Number(res.salary) !== "number") {
+            if (typeof Number(res.salary) !== "number") {//making sure the salary input is a number
                 throw new Error("You must input a number for the salary. No special characters.");
                 return;
             }
-            db.query(`SELECT names FROM department WHERE id = ${res.depId};`, function(err, results) {
+            db.query(`SELECT names FROM department WHERE id = ${res.depId};`, function(err, results) {//mkaing sure department ID existed
                 console.log(results)
                 if (results.length){
                     dep = results;
@@ -132,7 +132,7 @@ inquirer.prompt([
                 }
             })
             db.query(`INSERT INTO role (title, salary, department_id)VALUES("${res.roleTitle}", ${res.salary}, ${res.depId});`, function (err, results) {
-                console.table("Role added.");
+                console.log("Role added.");
               });
             db.query('SELECT * FROM role;', function (err, results) {
                     console.table(results);
@@ -174,7 +174,7 @@ inquirer.prompt([
                 throw new Error("Enter valid name.");
                 return;
             } 
-            db.query(`SELECT title FROM role WHERE id = ${res.roleID};`, function(err, results) {
+            db.query(`SELECT title FROM role WHERE id = ${res.roleID};`, function(err, results) {//making sure role ID existed
                 if (results.length){
                     role = results;
                 } else { 
@@ -184,8 +184,8 @@ inquirer.prompt([
             })
             const {managerID} = res;
             let managerInfo;
-            if (managerID.length){
-                db.query(`SELECT first_name FROM employees WHERE id = ${managerID};`, function(err, results) {
+            if (managerID.length){//checking if user input a manager ID
+                db.query(`SELECT first_name FROM employees WHERE id = ${managerID};`, function(err, results) {//making sure it exists
                     console.log(results)
                     if (results.length){
                         managerInfo = results;
@@ -269,8 +269,15 @@ inquirer.prompt([
             if (managerID.length){
                 db.query(`UPDATE employees SET manager_id = ${managerID} WHERE id = ${employeeID};`, function(err, results) {
                     if(err){
-                        console.log(err)
+                        console.log(err)//updating data
                     }})
+                db.query(`SELECT * FROM employees;`,function(err,results){
+                    if (err){
+                        console.log(err)//printing updated info in full table
+                    }else{
+                        console.table(results)
+                    }
+                })
             }
             })
         }
@@ -284,21 +291,21 @@ inquirer.prompt([
         ])
         .then((res) =>{
             const{employeeID}=res;
-            db.query(`SELECT first_name, last_name FROM employees WHERE id = ${employeeID};`, function(err, results) {
+            db.query(`SELECT first_name, last_name FROM employees WHERE id = ${employeeID};`, function(err, results) {//getting name from id
                 if (results.length){
                     console.log(results);
                 } else { 
                     throw new Error("You must select a valid id from the employees table to select an employee.");
                     return;}
             })
-            db.query(`DELETE FROM employees WHERE id=${res.employeeID};`,function(err,results){
+            db.query(`DELETE FROM employees WHERE id=${res.employeeID};`,function(err,results){//removing row from employee tabble
                 if (err){
                     console.log(err)
                 }else{
                     console.log('Successful deletion')
                 }
             })
-            db.query(`SELECT * FROM employees;`,function(err,results){
+            db.query(`SELECT * FROM employees;`,function(err,results){//printing updated table
                 if (err){
                     console.log(err)
                 }else{
