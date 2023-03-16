@@ -3,7 +3,6 @@ INSERT INTO department(names)
             ("Human Resources"),
             ("IT"),
             ("Executive Board");
-
 SELECT * FROM department;
 
 INSERT INTO role (title, salary, department_id)
@@ -19,11 +18,9 @@ INSERT INTO employees (first_name, last_name, role_id)
     VALUES ("Rick", "Grimes", 5);
 
 INSERT INTO employees (first_name, last_name, role_id, manager_id)
-    VALUES("Sam", "Winchester", 1, 1),
-        ("Dean", "Winchester", 2, 1),
-        ("Carl", "Grimes", 3, 1),
-        ("Joel", "Miller", 4, 1);
-       
-
-
+    VALUES("Ellie", "Williams", 4, 1),
+        ("Sam", "Winchester", 1, 1),
+        ("Dean", "Winchester", 3, 2),
+        ("Carl", "Grimes", 2, 1),
+        ("Joel", "Miller", 4, 2);
 SELECT * FROM employees;

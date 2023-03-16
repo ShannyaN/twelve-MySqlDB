@@ -1,8 +1,10 @@
+//DEPENDENCIES
 const express= require('express');
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
 const app = express();
 require('console.table');
+
 
 let regex = /[ !@#$%^&*()_+\-12345678=\[\]{};:"\\|,.<>\/?]/g;
 let re;
@@ -33,6 +35,7 @@ inquirer.prompt([
         'Show all Roles', 
         'Show Roles & Departments',
         'Show all Employees', 
+        'See all Interconnected Data',
         'Add a Department',
         'Add a Role',
         'Add an Employee',
@@ -53,12 +56,20 @@ inquirer.prompt([
             console.table(results);
             });
     }
-    if (task === "Show all Roles"){
+    if (task === 'Show Roles & Departments'){
         db.query('SELECT * FROM role INNER JOIN department ON role.department_id = department.id;',function (err, results) {
             console.table(results);
             });}
     if (task === "Show all Employees"){
         db.query('SELECT * FROM employees;', function (err, results) {
+            console.table(results);
+            });
+    }
+    if (task === "See all Interconnected Data"){
+        db.query(`SELECT employees.id as ID, employees.last_name as LastName,employees.first_name as FirstName, role.title as Position,department.names as Department, role.salary as Salary, employees.manager_id as ManagerID FROM employees 
+        JOIN role ON employees.role_id = role.id 
+        JOIN department on role.department_id=department.id
+        order by employees.id;`, function (err, results) {
             console.table(results);
             });
     }
@@ -126,6 +137,7 @@ inquirer.prompt([
               });
             db.query('SELECT * FROM role;', function (err, results) {
                     console.table(results);
+                    return;
             })
         }})
     }
@@ -190,6 +202,7 @@ inquirer.prompt([
                     console.table("Role added.");
                     db.query('SELECT * FROM employees;', function (err, results) {
                         console.table(results);
+                        return;
                 })
             }});
             }
@@ -202,6 +215,7 @@ inquirer.prompt([
                         console.table("Role added.");
                         db.query('SELECT * FROM employees;', function (err, results) {
                             console.table(results);
+                            return;
                     })
                 }});
             }}
