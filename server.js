@@ -31,11 +31,13 @@ inquirer.prompt([
         name: "task",
         choices: ['Show all Departments', 
         'Show all Roles', 
+        'Show Roles & Departments',
         'Show all Employees', 
         'Add a Department',
         'Add a Role',
         'Add an Employee',
-        'Update an Employee Role']
+        'Update an Employee Role'
+    ]   
     }
 ])
 .then ((response)=> {
@@ -51,6 +53,10 @@ inquirer.prompt([
             console.table(results);
             });
     }
+    if (task === "Show all Roles"){
+        db.query('SELECT * FROM role INNER JOIN department ON role.department_id = department.id;',function (err, results) {
+            console.table(results);
+            });}
     if (task === "Show all Employees"){
         db.query('SELECT * FROM employees;', function (err, results) {
             console.table(results);
@@ -102,7 +108,6 @@ inquirer.prompt([
                 throw new Error("Enter valid role title.");
                 return;
             } else{
-            let dep;
             if (typeof Number(res.salary) !== "number") {
                 throw new Error("You must input a number for the salary. No special characters.");
                 return;
@@ -119,7 +124,7 @@ inquirer.prompt([
             db.query(`INSERT INTO role (title, salary, department_id)VALUES("${res.roleTitle}", ${res.salary}, ${res.depId});`, function (err, results) {
                 console.table("Role added.");
               });
-            db.query('SELECT title FROM role;', function (err, results) {
+            db.query('SELECT * FROM role;', function (err, results) {
                     console.table(results);
             })
         }})
@@ -159,7 +164,6 @@ inquirer.prompt([
                 return;
             } 
             db.query(`SELECT title FROM role WHERE id = ${res.roleID};`, function(err, results) {
-                console.log(results)
                 if (results.length){
                     role = results;
                 } else { 
@@ -213,16 +217,29 @@ inquirer.prompt([
                 type: "input",
                 message: "Insert New Role ID",
                 name: "roleID"
+            },
+            {
+                type: "input",
+                message: "Insert New Manager ID if any",
+                name: "managerID"
             }
         ])
         .then ((res)=> {
             let {employeeID} = res;
+            let {managerID} = res;
             let {roleID} = res;
             db.query(`SELECT first_name FROM employees WHERE id = ${employeeID};`, function(err, results) {
                 if (results.length){
                     console.log(results);
                 } else { 
-                    throw new Error("You must select a valid id from the employees table.");
+                    throw new Error("You must select a valid id from the employees table to select an employee.");
+                    return;}
+            })
+            db.query(`SELECT first_name FROM employees WHERE id = ${managerID};`, function(err, results) {
+                if (results.length){
+                    console.log(results);
+                } else { 
+                    throw new Error("You must select a valid id from the employees table for the new manager.");
                     return;}
             })
             db.query(`SELECT title FROM role WHERE id = ${roleID};`, function(err, results) {
@@ -236,14 +253,11 @@ inquirer.prompt([
                 if(err){
                     console.log(err)
                 }})
+            if (managerID.length){
+                db.query(`UPDATE employees SET manager_id = ${managerID} WHERE id = ${employeeID};`, function(err, results) {
+                    if(err){
+                        console.log(err)
+                    }})
+            }
             })
         }})
-
-
-
-// db.query(`DELETE FROM favorite_books WHERE id = ?`,deletedRow, (err, result) => {
-// if (err) {
-//     console.log(err);
-// }
-// console.log(result);
-// });
