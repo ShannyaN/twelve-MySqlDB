@@ -5,9 +5,6 @@ const inquirer = require('inquirer');
 const app = express();
 require('console.table');
 
-
-let regex = /[ !@#$%^&*()_+\-12345678=\[\]{};:"\\|,.<>\/?]/g;
-let re;
 // Express middleware
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -26,6 +23,7 @@ const db = mysql.createConnection(
     console.log(`Connected to the hiring_db database.`)
   );
 
+//Selection of actions
 inquirer.prompt([
     {
         type: "list",
@@ -39,7 +37,8 @@ inquirer.prompt([
         'Add a Department',
         'Add a Role',
         'Add an Employee',
-        'Update an Employee Role'
+        'Update an Employee Role',
+        'Remove Employee'
     ]   
     }
 ])
@@ -274,4 +273,37 @@ inquirer.prompt([
                     }})
             }
             })
-        }})
+        }
+    if (task==='Remove Employee'){
+        inquirer.prompt([
+            {
+                type: "input",
+                message: "Insert Employee ID to be removed.",
+                name: "employeeID"
+            },
+        ])
+        .then((res) =>{
+            const{employeeID}=res;
+            db.query(`SELECT first_name, last_name FROM employees WHERE id = ${employeeID};`, function(err, results) {
+                if (results.length){
+                    console.log(results);
+                } else { 
+                    throw new Error("You must select a valid id from the employees table to select an employee.");
+                    return;}
+            })
+            db.query(`DELETE FROM employees WHERE id=${res.employeeID};`,function(err,results){
+                if (err){
+                    console.log(err)
+                }else{
+                    console.log('Successful deletion')
+                }
+            })
+            db.query(`SELECT * FROM employees;`,function(err,results){
+                if (err){
+                    console.log(err)
+                }else{
+                    console.table(results)
+                }
+            })
+            
+    })}})
