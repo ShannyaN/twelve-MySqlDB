@@ -73,8 +73,6 @@ inquirer.prompt([
         })
     }
     if (task === "Add a Role"){
-        // db.query('SELECT * FROM department;', function (err, results) {
-        //     console.table(results);});
         inquirer.prompt([
                 {
                     type: "input",
@@ -119,8 +117,42 @@ inquirer.prompt([
               });
             db.query('SELECT * FROM role;', function (err, results) {
                     console.table(results);
-        })
-    }})
+            })
+        }})
+    }
+    if (task === 'Add an Employee'){
+        inquirer.prompt([
+            {
+                type: "input",
+                message: "Enter employee's first name: ",
+                name: "firstName"
+            },
+            {
+                type: "input",
+                message: "Enter employee's last name: ",
+                name: "lastName"
+            },
+            {
+                type: "input",
+                message: "Insert Employee's Role id number.",
+                name: "roleID"
+            },
+            {
+                type: "confirm",
+                message: "Do you have a manager? ",
+                name: "manager"
+            }
+
+        ])
+    .then ((res)=> {
+        console.log(res)
+        db.query(`INSERT INTO role (title, salary, department_id)VALUES("${res.roleTitle}", ${res.salary}, ${res.depId});`, function (err, results) {
+            console.table("Role added.");
+          });
+        db.query('SELECT * FROM role;', function (err, results) {
+                console.table(results);
+        }
+    )})
 }})
 
 // db.query(`DELETE FROM favorite_books WHERE id = ?`,deletedRow, (err, result) => {
