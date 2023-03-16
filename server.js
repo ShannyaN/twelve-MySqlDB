@@ -4,6 +4,8 @@ const inquirer = require('inquirer');
 const app = express();
 require('console.table');
 
+var regex = /[ !@#$%^&*()_+\-12345678=\[\]{};:"\\|,.<>\/?]/g;
+
 // Express middleware
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -70,7 +72,56 @@ inquirer.prompt([
             })
         })
     }
-})
+    if (task === "Add a Role"){
+        // db.query('SELECT * FROM department;', function (err, results) {
+        //     console.table(results);});
+        inquirer.prompt([
+                {
+                    type: "input",
+                    message: "Insert Role Title",
+                    name: "roleTitle"
+                },
+                {
+                    type: "input",
+                    message: "Role Salary",
+                    name: "salary"
+                },
+                {
+                    type: "input",
+                    message: "Insert Role's Department id number.",
+                    name: "depId"
+                }
+            ])
+        .then ((res)=> {
+            let title = res.roleTitle;
+            console.log(regex.test(title));
+            let bool = regex.test(title);
+            if (regex.test(title)){
+                throw new Error("Enter valid role title.");
+                return;
+            } else{
+            let dep;
+            if (typeof Number(res.salary) !== "number") {
+                throw new Error("You must input a number for the salary. No special characters.");
+                return;
+            }
+            db.query(`SELECT names FROM department WHERE id = ${res.depId};`, function(err, results) {
+                console.log(results)
+                if (results.length){
+                    dep = results;
+                } else { 
+                    throw new Error("You must select a valid id from the department table.");
+                    return;
+                }
+            })
+            db.query(`INSERT INTO role (title, salary, department_id)VALUES("${res.roleTitle}", ${res.salary}, ${res.depId});`, function (err, results) {
+                console.table("Role added.");
+              });
+            db.query('SELECT * FROM role;', function (err, results) {
+                    console.table(results);
+        })
+    }})
+}})
 
 // db.query(`DELETE FROM favorite_books WHERE id = ?`,deletedRow, (err, result) => {
 // if (err) {
