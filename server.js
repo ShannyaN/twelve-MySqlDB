@@ -37,7 +37,6 @@ inquirer.prompt([
         'Add an Employee',
         'Update an Employee Role']
     }
-
 ])
 .then ((response)=> {
     const task = response.task;
@@ -123,7 +122,6 @@ inquirer.prompt([
             db.query('SELECT title FROM role;', function (err, results) {
                     console.table(results);
             })
-            // again();
         }})
     }
     if (task === 'Add an Employee'){
@@ -151,15 +149,12 @@ inquirer.prompt([
 
         ])
         .then ((res)=> {
-            let name1 = res.firstName;
-            let name2 = res.lastName;
             let role;
-            let manager = res.managerID;
-            if (regex.test(name1)){
+            if (regex.test(res.firstName)){
                 throw new Error("Enter valid name.");
                 return;
             } 
-            if (regex.test(name2)){
+            if (regex.test(res.lastName)){
                 throw new Error("Enter valid name.");
                 return;
             } 
@@ -205,18 +200,44 @@ inquirer.prompt([
                             console.table(results);
                     })
                 }});
-                }
-                // db.query(`INSERT INTO emlployees (first_name, last_name, role_id, manager_id) VALUES ("${res.firstName}", "${res.lastName}" , ${res.roleID});`, function (err, results) {
-                // if (err){
-                //     console.log(err)
-                // }else{
-                //     console.log("Employee added.");
-                // }})
-            // again();
-        }
-    // db.query('SELECT * FROM employee;', function (err, results) {
-    //     console.table(results);})
-    )}})
+            }}
+    )}
+    if (task==='Update an Employee Role'){
+        inquirer.prompt([
+            {
+                type: "input",
+                message: "Insert Employee ID",
+                name: "employeeID"
+            },
+            {
+                type: "input",
+                message: "Insert New Role ID",
+                name: "roleID"
+            }
+        ])
+        .then ((res)=> {
+            let {employeeID} = res;
+            let {roleID} = res;
+            db.query(`SELECT first_name FROM employees WHERE id = ${employeeID};`, function(err, results) {
+                if (results.length){
+                    console.log(results);
+                } else { 
+                    throw new Error("You must select a valid id from the employees table.");
+                    return;}
+            })
+            db.query(`SELECT title FROM role WHERE id = ${roleID};`, function(err, results) {
+                if (results.length){
+                    console.log(results);
+                } else { 
+                    throw new Error("You must select a valid role id from the role table.");
+                    return;}
+            })
+            db.query(`UPDATE employees SET role_id = ${roleID} WHERE id = ${employeeID};`, function(err, results) {
+                if(err){
+                    console.log(err)
+                }})
+            })
+        }})
 
 
 
