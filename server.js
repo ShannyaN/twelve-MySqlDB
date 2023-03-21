@@ -130,7 +130,7 @@ inquirer.prompt([
                     console.table(results);
                     return;
             })
-        })
+        })}
     if (task === 'Add an Employee'){
         inquirer.prompt([
             {
@@ -158,12 +158,8 @@ inquirer.prompt([
         .then ((res)=> {
             let role;
             db.query(`SELECT title FROM role WHERE id = ${res.roleID};`, function(err, results) {//making sure role ID existed
-                if (results.length){
-                    role = results;
-                } else { 
-                    throw new Error("You must select a valid id from the role table.");
-                    return;
-                }
+                if (err){
+                    console.log(err)}
             })
             const {managerID} = res;
             let managerInfo;
@@ -232,18 +228,12 @@ inquirer.prompt([
                     return;}
             })
             db.query(`SELECT first_name FROM employees WHERE id = ${managerID};`, function(err, results) {
-                if (results.length){
-                    console.log(results);
-                } else { 
-                    throw new Error("You must select a valid id from the employees table for the new manager.");
-                    return;}
+                if (err){
+                    console.log(err)}
             })
             db.query(`SELECT title FROM role WHERE id = ${roleID};`, function(err, results) {
-                if (results.length){
-                    console.log(results);
-                } else { 
-                    throw new Error("You must select a valid role id from the role table.");
-                    return;}
+                if (err){
+                    console.log(err)}
             })
             db.query(`UPDATE employees SET role_id = ${roleID} WHERE id = ${employeeID};`, function(err, results) {
                 if(err){
@@ -308,7 +298,7 @@ inquirer.prompt([
             const{departmentID}=res;
             db.query(`SELECT names FROM department WHERE id = ${departmentID};`, function(err, results) {//getting name from id
                 if (results.length){
-                    console.log(results);
+                    console.log("Department to be removed" + results);
                 } else { 
                     throw new Error("You must select a valid id from the department table to select a department.");
                     return;}
@@ -339,11 +329,8 @@ inquirer.prompt([
         .then((res) =>{
             const{roleID}=res;
             db.query(`SELECT title FROM role WHERE id = ${roleID};`, function(err, results) {//getting name from id
-                if (results.length){
-                    console.log(results);
-                } else { 
-                    throw new Error("You must select a valid id from the role table to select a position.");
-                    return;}
+                if (err){
+                    console.log(err)}
             })
             db.query(`DELETE FROM role WHERE id=${res.roleID};`,function(err,results){//removing row from role tabble
                 if (err){
