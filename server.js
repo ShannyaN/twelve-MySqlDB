@@ -38,7 +38,8 @@ inquirer.prompt([
         'Update an Employee Role',
         'Remove Employee',
         'Remove Department',
-        'Remove Role'
+        'Remove Role',
+        "View Employees by Manager"
     ]   
     }
 ])
@@ -365,4 +366,29 @@ inquirer.prompt([
             })
             
     })}
+    if (task === "View Employees by Manager"){
+        inquirer.prompt([
+            {
+                type: "input",
+                message: "Insert manager ID to view their employees.",
+                name: "managerID"
+            },
+        ])
+        .then((res) =>{
+            const{managerID}=res;//print entire table
+            db.query(`SELECT last_name, first_name FROM employees WHERE id = ${managerID};`, function (err, results) {
+                if(err){
+                    console.log(err)
+                }else {
+                    console.log("Manager Selected")
+                    console.table(results);
+            }})
+            db.query(`SELECT * FROM employees WHERE manager_id = ${managerID};`, function (err, results) {
+                if(err){
+                    console.log(err)
+                }else {
+                console.table(results);
+            }})
+        })
+    }
 })
