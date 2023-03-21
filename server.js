@@ -31,14 +31,14 @@ inquirer.prompt([
         name: "task",
         choices: ['Show all Departments', 
         'Show all Roles', 
-        'Show Roles & Departments',
         'Show all Employees', 
-        'See all Interconnected Data',
         'Add a Department',
         'Add a Role',
         'Add an Employee',
         'Update an Employee Role',
-        'Remove Employee'
+        'Remove Employee',
+        'Remove Department',
+        'Remove Role'
     ]   
     }
 ])
@@ -51,20 +51,12 @@ inquirer.prompt([
           });
     }
     if (task === "Show all Roles"){
-        db.query('SELECT * FROM role;', function (err, results) {
+        db.query(`SELECT role.id, role.title, role.salary, department.names as department
+                FROM role JOIN department ON role.department_id = department.id;`, function (err, results) {
             console.table(results);
             });
     }
-    if (task === 'Show Roles & Departments'){//joined departments and roles to see which roles correspond to which departments
-        db.query('SELECT * FROM role INNER JOIN department ON role.department_id = department.id;',function (err, results) {
-            console.table(results);
-            });}
     if (task === "Show all Employees"){
-        db.query('SELECT * FROM employees;', function (err, results) {
-            console.table(results);
-            });
-    }
-    if (task === "See all Interconnected Data"){
         db.query(`SELECT employees.id as ID, employees.last_name as LastName,employees.first_name as FirstName, role.title as Position,department.names as Department, role.salary as Salary, employees.manager_id as ManagerID FROM employees 
         JOIN role ON employees.role_id = role.id 
         JOIN department on role.department_id=department.id
@@ -82,18 +74,13 @@ inquirer.prompt([
                 ])
             .then ((res)=> {
                 let depName = res.text;
-                if (regex.test(depName)){//making sure the name does not have special characters and is therefore valid
-                    throw new Error("Enter valid department name.");
-                    return;
-                } else{
                 db.query(`INSERT INTO department(names) VALUES ("${depName}");`, function (err, results) {
                     console.table("Department added");
                   });
                 db.query('SELECT * FROM department;', function (err, results) {//print table with the new data input
                         console.table(results);
                 })
-        }})
-    }
+            })}
     if (task === "Add a Role"){
         inquirer.prompt([//new prompts to get more info
                 {
@@ -312,5 +299,70 @@ inquirer.prompt([
                     console.table(results)
                 }
             })
+    })}
+    if (task==='Remove Department'){
+        inquirer.prompt([
+            {
+                type: "input",
+                message: "Insert Department ID to be removed.",
+                name: "departmentID"
+            },
+        ])
+        .then((res) =>{
+            const{departmentID}=res;
+            db.query(`SELECT names FROM department WHERE id = ${departmentID};`, function(err, results) {//getting name from id
+                if (results.length){
+                    console.log(results);
+                } else { 
+                    throw new Error("You must select a valid id from the department table to select a department.");
+                    return;}
+            })
+            db.query(`DELETE FROM department WHERE id=${res.departmentID};`,function(err,results){//removing row from department tabble
+                if (err){
+                    console.log(err)
+                }else{
+                    console.log('Successful deletion')
+                }
+            })
+            db.query(`SELECT * FROM department;`,function(err,results){//printing updated table
+                if (err){
+                    console.log(err)
+                }else{
+                    console.table(results)
+                }
+            })  
+    })}
+    if (task==='Remove Role'){
+        inquirer.prompt([
+            {
+                type: "input",
+                message: "Insert Role ID to be removed.",
+                name: "roleID"
+            },
+        ])
+        .then((res) =>{
+            const{roleID}=res;
+            db.query(`SELECT title FROM role WHERE id = ${roleID};`, function(err, results) {//getting name from id
+                if (results.length){
+                    console.log(results);
+                } else { 
+                    throw new Error("You must select a valid id from the role table to select a position.");
+                    return;}
+            })
+            db.query(`DELETE FROM role WHERE id=${res.roleID};`,function(err,results){//removing row from role tabble
+                if (err){
+                    console.log(err)
+                }else{
+                    console.log('Successful deletion')
+                }
+            })
+            db.query(`SELECT * FROM role;`,function(err,results){//printing updated table
+                if (err){
+                    console.log(err)
+                }else{
+                    console.table(results)
+                }
+            })
             
-    })}})
+    })}
+})
