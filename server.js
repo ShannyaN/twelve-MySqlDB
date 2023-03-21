@@ -58,13 +58,22 @@ inquirer.prompt([
             });
     }
     if (task === "Show all Employees"){
-        db.query(`SELECT employees.id as ID, employees.last_name as LastName,employees.first_name as FirstName, role.title as Position,department.names as Department, role.salary as Salary, employees.manager_id as ManagerID FROM employees 
+        db.query(`SELECT employees.id as ID, employees.last_name as LastName,
+        employees.first_name as FirstName, 
+        role.title as Position,
+        department.names as Department, 
+        role.salary as Salary, 
+        CONCAT(manager.first_name,' ',manager.last_name) as Manager FROM employees employees 
+        LEFT JOIN employees manager on employees.manager_id = manager.id
         JOIN role ON employees.role_id = role.id 
         JOIN department on role.department_id=department.id
-        order by employees.id;`, function (err, results) {
+        ORDER BY employees.id;`, function (err, results) {
+            if(err){
+                console.log(err)
+            }else{
             console.table(results);
-            });
-    }
+            }});
+        }
     if (task === "Add a Department"){
             inquirer.prompt([
                     {
