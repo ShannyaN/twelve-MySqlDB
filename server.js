@@ -220,20 +220,21 @@ inquirer.prompt([
             let {employeeID} = res;
             let {managerID} = res;
             let {roleID} = res;
-            db.query(`SELECT first_name FROM employees WHERE id = ${employeeID};`, function(err, results) {
-                if (results.length){
-                    console.log(results);
-                } else { 
-                    throw new Error("You must select a valid id from the employees table to select an employee.");
-                    return;}
+            db.query(`SELECT first_name, last_name FROM employees WHERE id = ${employeeID};`, function(err, results) {
+                if (err){
+                    console.log(err)}
+                console.log("Name of Employee Updated: ")
+                console.log(results);
             })
-            db.query(`SELECT first_name FROM employees WHERE id = ${managerID};`, function(err, results) {
+            db.query(`SELECT first_name FROM employees WHERE id = ?;`, res.managerID, function(err, results) {
                 if (err){
                     console.log(err)}
             })
             db.query(`SELECT title FROM role WHERE id = ${roleID};`, function(err, results) {
                 if (err){
                     console.log(err)}
+                console.log("Name of New Position: ")
+                console.log(results)
             })
             db.query(`UPDATE employees SET role_id = ${roleID} WHERE id = ${employeeID};`, function(err, results) {
                 if(err){
@@ -244,7 +245,7 @@ inquirer.prompt([
                     if(err){
                         console.log(err)//updating data
                     }})
-                db.query(`SELECT * FROM employees;`,function(err,results){
+                db.query(`SELECT * FROM employees;`, function(err,results){
                     if (err){
                         console.log(err)//printing updated info in full table
                     }else{

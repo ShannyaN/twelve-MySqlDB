@@ -18,25 +18,27 @@
 -- SELECT
 --     department.names,
 --         role.title,
---         role.salary,
--- FROM Employees employee
--- JOIN Employees manager
--- ON employee.ManagerId = manager.Id
--- SELECT
---     role.id,
---         role.title,
---         role.salary,
---         department.names as department
--- FROM role
--- JOIN department
--- ON role.department_id = department.id;
-SELECT employees.id as ID, employees.last_name as LastName,
-        employees.first_name as FirstName, 
-        role.title as Position,
-        department.names as Department, 
-        role.salary as Salary, ,
-        employees.first_name + ' ' +  employees.last_name + ' ' + employees.manager_id  as ManagerName FROM employees 
-        JOIN role ON employees.role_id = role.id 
-        JOIN department on role.department_id=department.id
-        -- JOIN employees on employees.id=employees.manager_id
-        order by ID;
+-- --         role.salary,
+-- -- FROM Employees employee
+-- -- JOIN Employees manager
+-- -- ON employee.ManagerId = manager.Id
+-- -- SELECT
+-- --     role.id,
+-- --         role.title,
+-- --         role.salary,
+-- --         department.names as department
+-- -- FROM role
+-- -- JOIN department
+-- -- ON role.department_id = department.id;
+-- SELECT employees.id as ID, employees.last_name as LastName,
+--         employees.first_name as FirstName, 
+--         role.title as Position,
+--         department.names as Department, 
+--         role.salary as Salary, ,
+--         employees.first_name + ' ' +  employees.last_name + ' ' + employees.manager_id  as ManagerName FROM employees 
+--         JOIN role ON employees.role_id = role.id 
+--         JOIN department on role.department_id=department.id
+--         -- JOIN employees on employees.id=employees.manager_id
+--         order by ID;
+
+SELECT first_name FROM employees WHERE id = 3;
