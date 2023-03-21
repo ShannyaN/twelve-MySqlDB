@@ -110,13 +110,8 @@ inquirer.prompt([
                 }
             ])
         .then ((res)=> {
-            let title = res.roleTitle;
-            if (regex.test(title)){
-                throw new Error("Enter valid role title.");
-                return;
-            } else{
             if (typeof Number(res.salary) !== "number") {//making sure the salary input is a number
-                throw new Error("You must input a number for the salary. No special characters.");
+                throw new Error("You must input a valid number for the salary. No special characters.");
                 return;
             }
             db.query(`SELECT names FROM department WHERE id = ${res.depId};`, function(err, results) {//mkaing sure department ID existed
@@ -135,8 +130,7 @@ inquirer.prompt([
                     console.table(results);
                     return;
             })
-        }})
-    }
+        })
     if (task === 'Add an Employee'){
         inquirer.prompt([
             {
@@ -163,14 +157,6 @@ inquirer.prompt([
         ])
         .then ((res)=> {
             let role;
-            if (regex.test(res.firstName)){
-                throw new Error("Enter valid name.");
-                return;
-            } 
-            if (regex.test(res.lastName)){
-                throw new Error("Enter valid name.");
-                return;
-            } 
             db.query(`SELECT title FROM role WHERE id = ${res.roleID};`, function(err, results) {//making sure role ID existed
                 if (results.length){
                     role = results;
